@@ -1,12 +1,3 @@
-// const request = require("request");
-
-// const options = {
-//   url: "https://api.github.com/repos/request/request",
-//   headers: {
-//     "User-Agent": "request"
-//   }
-// };
-
 var inputPesquisa = document.querySelector("#inputPesquisa");
 var listaRepositorios = document.querySelector("#listaRepositorios");
 
@@ -45,16 +36,14 @@ function buscarRepositorio() {
 
   if (!inputPesquisa.value) return listaRepositorios.appendChild(msgErro);
 
-  console.log("inputPesquisa.value", inputPesquisa.value);
-
   axios
     .get(`https://api.github.com/users/${inputPesquisa.value}/repos`)
     .then(function(response) {
-      listaRepositorios.innerHTML = "";
       var descricaoUsario = document.querySelector("#descricaoUsuario");
       var textoDescricaoUsuario = document.createTextNode(
         `Repositórios públicos e forks do usuário '${inputPesquisa.value}' no GitHub`
       );
+      listaRepositorios.innerHTML = "";
       descricaoUsario.appendChild(textoDescricaoUsuario);
       listaRepositorios.appendChild(descricaoUsario);
       inputPesquisa.value = "";
