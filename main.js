@@ -17,10 +17,10 @@ function mostrarLoading() {
   listaRepositorios.appendChild(loadingElement);
 }
 
-function mostrarError() {
+function mostrarError(erro) {
   listaRepositorios.innerHTML = "";
   var errorElement = document.createElement("div");
-  var textElement = document.createTextNode("Erro na requisição.");
+  var textElement = document.createTextNode(erro);
   errorElement.setAttribute("class", "alert alert-danger mt-3");
   errorElement.setAttribute("role", "alert");
   errorElement.appendChild(textElement);
@@ -40,11 +40,12 @@ function buscarRepositorio() {
     .get(`https://api.github.com/users/${inputPesquisa.value}/repos`)
     .then(function(response) {
       var descricaoUsario = document.querySelector("#descricaoUsuario");
+      descricaoUsario.innerHTML = "";
       var textoDescricaoUsuario = document.createTextNode(
-        `Repositórios públicos e forks do usuário '${inputPesquisa.value}' no GitHub`
+        `${response.data.length} Repositórios públicos e forks encontrados do usuário '${inputPesquisa.value}' no GitHub`
       );
       listaRepositorios.innerHTML = "";
-      descricaoUsario.appendChild(textoDescricaoUsuario);
+      descricaoUsario.append(textoDescricaoUsuario);
       listaRepositorios.appendChild(descricaoUsario);
       inputPesquisa.value = "";
       response.data.forEach(element => {
@@ -56,7 +57,7 @@ function buscarRepositorio() {
         listaRepositorios.appendChild(itemListaRepositorios);
       });
     })
-    .catch(function() {
-      mostrarError();
+    .catch(e => {
+      mostrarError(e);
     });
 }
