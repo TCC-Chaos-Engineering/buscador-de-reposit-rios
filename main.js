@@ -1,23 +1,24 @@
 var inputPesquisa = document.querySelector("#inputPesquisa");
 var listaRepositorios = document.querySelector("#listaRepositorios");
+var cardUsuario = document.querySelector("#cardUsuario");
 
-function mostrarLoading() {
-  listaRepositorios.innerHTML = "";
-  var loadingElement = document.createElement("div");
-  loadingElement.setAttribute(
-    "class",
-    "spinner-border text-secondary centralizado"
-  );
-  loadingElement.setAttribute("role", "status");
-  var spanLoading = document.createElement("span");
-  spanLoading.setAttribute("class", "sr-only");
-  var textoSpan = document.createTextNode("Loading...");
-  spanLoading.appendChild(textoSpan);
-  loadingElement.appendChild(spanLoading);
-  listaRepositorios.appendChild(loadingElement);
-}
+// function mostrarLoading() {
+//   listaRepositorios.innerHTML = "";
+//   var loadingElement = document.createElement("div");
+//   loadingElement.setAttribute(
+//     "class",
+//     "spinner-border text-secondary centralizado"
+//   );
+//   loadingElement.setAttribute("role", "status");
+//   var spanLoading = document.createElement("span");
+//   spanLoading.setAttribute("class", "sr-only");
+//   var textoSpan = document.createTextNode("Loading...");
+//   spanLoading.appendChild(textoSpan);
+//   loadingElement.appendChild(spanLoading);
+//   listaRepositorios.appendChild(loadingElement);
+// }
 
-function mostrarError(erro) {
+function mostrarErroRequisicao(erro) {
   listaRepositorios.innerHTML = "";
   var errorElement = document.createElement("div");
   var textElement = document.createTextNode(erro);
@@ -27,7 +28,7 @@ function mostrarError(erro) {
   listaRepositorios.appendChild(errorElement);
 }
 
-function buscarRepositorio() {
+function mostrarErrorUsuarioVazio() {
   var msgErro = document.createElement("div");
   var textoMsgErro = document.createTextNode("Você não digitou um usuário.");
   msgErro.setAttribute("class", "alert alert-danger mt-3");
@@ -35,17 +36,20 @@ function buscarRepositorio() {
   msgErro.appendChild(textoMsgErro);
 
   if (!inputPesquisa.value) return listaRepositorios.appendChild(msgErro);
+}
 
+function buscarRepositorios() {
+  mostrarErrorUsuarioVazio();
   axios
     .get(`https://api.github.com/users/${inputPesquisa.value}/repos`)
     .then(function(response) {
       var descricaoUsario = document.querySelector("#descricaoUsuario");
       descricaoUsario.innerHTML = "";
       var textoDescricaoUsuario = document.createTextNode(
-        `${response.data.length} Repositórios públicos e forks encontrados do usuário '${inputPesquisa.value}' no GitHub`
+        `${response.data.length} repositórios públicos e forks encontrados`
       );
       listaRepositorios.innerHTML = "";
-      descricaoUsario.append(textoDescricaoUsuario);
+      descricaoUsario.appendChild(textoDescricaoUsuario);
       listaRepositorios.appendChild(descricaoUsario);
       inputPesquisa.value = "";
       response.data.forEach(element => {
@@ -58,6 +62,36 @@ function buscarRepositorio() {
       });
     })
     .catch(e => {
-      mostrarError(e);
+      mostrarErroRequisicao(e);
+    });
+}
+
+function buscarPerfil() {
+  mostrarErrorUsuarioVazio();
+
+  axios
+    .get(`https://api.github.com/users/${inputPesquisa.value}`)
+    .then(function(response) {
+      var nomeUsario = document.querySelector("#nomeUsuario");
+      var textoNomeUsuario = document.createTextNode(`${response.data.name}`);
+      var imagemUsario = document.querySelector("#imagemUsuario");
+      imagemUsario.setAttribute("src", `${response.data.avatar_url}`);
+      var nomeLocalidade = document.querySelector("#nomeLocalidade");
+      var textoNomeLocalidade = document.createTextNode(
+        `${response.data.location}`
+      );
+      nomeUsario.innerHTML = "";
+      cardUsuario.innerHTML = "";
+      inputPesquisa.value = "";
+      nomeLocalidade.innerHTML = "";
+      nomeUsario.appendChild(textoNomeUsuario);
+      nomeLocalidade.appendChild(textoNomeLocalidade);
+      cardUsuario.appendChild(nomeUsario);
+      if (response.data.location !== null) {
+        cardUsuario.appendChild(nomeLocalidade);
+      }
+    })
+    .catch(e => {
+      mostrarErroRequisicao(e);
     });
 }

@@ -1,5 +1,9 @@
 .centralizado {
-    position: absolute;
-    left: 50%;
-    top: 50%;        
+  position: absolute;
+  left: 50%;
+  top: 50%;
+}
+
+.link-centro {
+  margin-left: 5rem;
 }
